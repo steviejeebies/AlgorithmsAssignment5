@@ -48,6 +48,7 @@ public class CompetitionDijkstra {
         int sourceNodeDijkstra;
         double distTo[];
         boolean visited[];
+        int numVisited;
         // DirectedEdge edgeTo[];
         PriorityQueue<Integer> vertexMinDistPQ;
 
@@ -55,6 +56,7 @@ public class CompetitionDijkstra {
             adjacent = (LinkedList<DirectedEdge>[]) new LinkedList [size];
             numIntersections = size;
             numStreets = 0;
+            numVisited = 0;
         }
 
         public void addEdge(DirectedEdge newEdge) {
@@ -64,8 +66,17 @@ public class CompetitionDijkstra {
             numStreets++;
         }
 
-        // This method will be called every time a new source vertex/intersection
-        // is examined with Dijkstra's algorithms.
+        public void visitVertex(int vertex) {
+            visited[vertex] = true;
+            numVisited++;
+        }
+
+        public boolean stillHasVertexesToVisit() {
+            return (numVisited < numIntersections);
+        }
+
+        // This method will be called every time a new *source* vertex/intersection
+        // is used for Dijkstra's algorithms.
         public void initialiseDijkstra(int sourceNode) {
             sourceNodeDijkstra = sourceNode;
 
@@ -82,6 +93,7 @@ public class CompetitionDijkstra {
 
             // no vertices have been visited yet.
             visited = new boolean[numIntersections];
+            numVisited = 0;
 
             //edgeTo = new DirectedEdge[numIntersections];
         }
@@ -105,12 +117,13 @@ public class CompetitionDijkstra {
 
     // Variables that are used by timeRequiredforCompetition()
     int slowestWalkingSpeed;
-    int longestDistanceBetweenTwoVertices;
+    double longestDistanceBetweenTwoVertices;
     boolean invalidMap;
     /**
       * @param filename: A filename containing the details of the city road network
       * @param sA, sB, sC: speeds for 3 contestants
       */
+
     CompetitionDijkstra (String filename, int sA, int sB, int sC){
         // We need to get the slowest walking speed of the three contestants
         slowestWalkingSpeed = sA;
@@ -129,37 +142,66 @@ public class CompetitionDijkstra {
         longestDistanceBetweenTwoVertices = dijkstraLongestDistance(ourCityMap);
     }
 
-    public int dijkstraLongestDistance(CityMap ourCityMap)
-    {
+    public double dijkstraLongestDistance(CityMap ourCityMap) {
         int numIntersections = ourCityMap.getNumIntersections();
+        double longestDistanceBetweenTwoVertices = -1;
 
-        // For every intersections in the map, we need to find the shortest distance
-        // from that intersection to every other intersection. In other words, many-to-many
-        // shortest paths, but while using Dijkstra (which is a Single Source algorithm).
-        // As a result, we have to iterate through the vertices/intersections, carrying out
-        // Dijkstra's algorithm on each one. We'll find the intersection furthest away from
-        // this one, and if the distance between these two intersections is the largest of
-        // all possible combinations, then we save this distance for later.
-        for(int i = 0; i < numIntersections; i++)
-        {
-            // start a new version of the Dijkstra algorithm from scratch,
-            // using 'i' as the source vertex
-            ourCityMap.initialiseDijkstra(i);
-            int nextVertexToVisit = i;
+        /* For every intersections in the map, we need to find the shortest distance
+         * from that intersection to every other intersection. In other words, many-to-many
+         * shortest paths, but while using Dijkstra (which is a Single Source algorithm).
+         * As a result, we have to iterate through the vertices/intersections, carrying out
+         * Dijkstra's algorithm on each one. We'll find the intersection furthest away from
+         * this one, and if the distance between these two intersections is the largest of
+         * all possible combinations, then we save this distance for later. */
 
-            // if we have already visited this vertex, then we need to get the
-            // next min-distance vertex on the PQ.
-            while(ourCityMap.visited[nextVertexToVisit])
-            {
-                if(ourCityMap.vertexMinDistPQ.isEmpty()); //TODO
-                nextVertexToVisit = ourCityMap.vertexMinDistPQ.poll();
+        for (int vertexSource = 0; vertexSource < numIntersections; vertexSource++) {
+            // start a new version of the Dijkstra algorithm from scratch
+            ourCityMap.initialiseDijkstra(vertexSource);
+            int nextVertexToVisit = vertexSource;
+
+            while(ourCityMap.stillHasVertexesToVisit()) {
+                // if we have already visited this vertex, then we need to get the
+                // next min-distance vertex on the PQ.
+                while (ourCityMap.visited[nextVertexToVisit]) {
+                    if (ourCityMap.vertexMinDistPQ.isEmpty()) return -1;
+                    nextVertexToVisit = ourCityMap.vertexMinDistPQ.poll();
+                }
+
+                /* if the min-distance vertex on the minPQ is of a distance of Integer.MAX_VALUE,
+                 * then this means that there is no route that exists between the source vertex
+                 * and this vertex, which means that this is an invalid city map. */
+
+                if (ourCityMap.distTo[nextVertexToVisit] == Integer.MAX_VALUE) return -1;
+
+                // mark this vertex as visited
+                ourCityMap.visitVertex(nextVertexToVisit);
+
+                // Relaxing all edges starting from the 'nextVertexToVisit' vertex
+                for (DirectedEdge e : ourCityMap.adjacent[nextVertexToVisit]) {
+                    int w = e.getTo();
+
+                    if (ourCityMap.distTo[w] > ourCityMap.distTo[nextVertexToVisit] + e.weight) {
+                        ourCityMap.distTo[w] = ourCityMap.distTo[nextVertexToVisit] + e.weight;
+
+                        // As the distance to w has definitely been shortened if we are in this if-statement,
+                        // then we can throw the new value for w on the MinPQ (assuming we haven't already
+                        // visited and relaxed all the vertices of w).
+                        if (!ourCityMap.visited[w]) ourCityMap.vertexMinDistPQ.add(w);
+                        //ourCityMap.edgeTo[w] = e;
+                    }
+                }
             }
 
-            ourCityMap.visited[nextVertexToVisit]= true;
-
-            // we need to relax all the edges coming from this vertex
-
+            // finally, we need to iterate through the finalised shortest distance paths between the current
+            // source and every other vertex, and if any of the distances are greater than the current
+            // longestDistanceBetweenTwoVertices, then we update that value.
+            for (int j = 0; j < numIntersections; j++) {
+                if (ourCityMap.distTo[j] > longestDistanceBetweenTwoVertices)
+                    longestDistanceBetweenTwoVertices = ourCityMap.distTo[j];
+            }
         }
+
+        return longestDistanceBetweenTwoVertices;
     }
 
     /**
