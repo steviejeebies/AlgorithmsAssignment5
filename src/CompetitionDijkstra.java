@@ -38,23 +38,15 @@ public class CompetitionDijkstra {
         public double getWeight() { return this.weight; }
     }
 
-    class DirectedEdgeComparator implements Comparator<DirectedEdge>{
-
-        // Overriding compare()method of Comparator
-        // for descending order of cgpa
-        public int compare(DirectedEdge e1, DirectedEdge e2) {
-            if (e1.weight < e2.weight)
-                return 1;
-            else if (e1.weight > e2.weight)
-                return -1;
-            return 0;
-        }
-    }
-
     static class CityMap {
-        LinkedList<DirectedEdge> [] adjacent;
+        LinkedList<DirectedEdge>[] adjacent;
         int numIntersections;
         int numStreets;
+
+        int sourceNodeDijkstra;
+        double distTo[];
+        DirectedEdge edgeTo[];
+        PriorityQueue<Integer> vertexMinDistPQ;
 
         CityMap(int size) {
             adjacent = (LinkedList<DirectedEdge>[]) new LinkedList [size];
@@ -62,11 +54,33 @@ public class CompetitionDijkstra {
             numStreets = 0;
         }
 
+        // This method will be called every time a new source vertex/intersection
+        // is examined with Dijkstra's algorithms.
+        public void initialiseDijkstra(int sourceNode) {
+            sourceNodeDijkstra = sourceNode;
+            distTo = new double[numIntersections];
+            edgeTo = new DirectedEdge[numIntersections];
+            vertexMinDistPQ = new PriorityQueue<Integer>(numIntersections, new VertexComparator());
+        }
+
         public void addEdge(DirectedEdge newEdge) {
             int from = newEdge.getFrom();
             if(adjacent[from] == null) adjacent[from] = new LinkedList<DirectedEdge>();
             adjacent[from].add(newEdge);
             numStreets++;
+        }
+
+        // This comparator is used by our vertexMinDistPQ to get the vertex of
+        // shortest distance from the currently examined vertex. 
+        class VertexComparator implements Comparator<Integer>{
+            @Override
+            public int compare(Integer v1, Integer v2) {
+                if (distTo[v1] < distTo[v2])
+                    return 1;
+                else if (distTo[v1] > distTo[v2])
+                    return -1;
+                return 0;
+            }
         }
 
         public int getNumIntersections() { return numIntersections; }
@@ -82,25 +96,29 @@ public class CompetitionDijkstra {
         int slowestWalkingSpeed = sA;
         if(sB < slowestWalkingSpeed) slowestWalkingSpeed = sB;
         if(sC < slowestWalkingSpeed) slowestWalkingSpeed = sC;
-        CityMap ourCityMap = getMapFromFile(filename, myPQ);
+        CityMap ourCityMap = getMapFromFile(filename);
         int numIntersections = ourCityMap.getNumIntersections();
 
         int longestDistanceBetweenTwoVertices = -1;
 
         // For every intersections in the map, we need to find the shortest distance
         // from that intersection to every other intersection. In other words, many-to-many
-        // shortest paths, but while using Djikstra (which is a Single Source algorithm).
+        // shortest paths, but while using Dijkstra (which is a Single Source algorithm).
         // As a result, we have to iterate through the vertices/intersections, carrying out
-        // Djikstra's algorithm on each one. We'll find the intersection furthest away from
+        // Dijkstra's algorithm on each one. We'll find the intersection furthest away from
         // this one, and if the distance between these two intersections is the largest of
         // all possible combinations, then we save this distance for later.
-//        for(int i = 0; i < numIntersections; i++)
-//        {
-//            double distTo[] = new double [numIntersections];
-//            DirectedEdge edgeTo[] = new DirectedEdge [numIntersections];
-//
-//
-//        }
+        for(int i = 0; i < numIntersections; i++)
+        {
+
+
+            for (int distIter = 0; distIter < numIntersections; distIter++)
+                distTo[distIter] = Integer.MAX_VALUE;
+
+            distTo[i] = 0;
+
+
+        }
 
     }
 
