@@ -46,14 +46,14 @@ public class CompetitionDijkstra {
 
         // Dijkstra related variables/arrays
         int sourceNodeDijkstra;
-        double distTo[];
-        boolean visited[];
+        double[] distTo;
+        boolean[] visited;
         int numVisited;
         // DirectedEdge edgeTo[];
         PriorityQueue<Integer> vertexMinDistPQ;
 
         CityMap(int size) {
-            adjacent = (LinkedList<DirectedEdge>[]) new LinkedList [size];
+            adjacent = (LinkedList<DirectedEdge>[]) new LinkedList[size];
             numIntersections = size;
             numStreets = 0;
             numVisited = 0;
@@ -61,7 +61,7 @@ public class CompetitionDijkstra {
 
         public void addEdge(DirectedEdge newEdge) {
             int from = newEdge.getFrom();
-            if(adjacent[from] == null) adjacent[from] = new LinkedList<DirectedEdge>();
+            if(adjacent[from] == null) adjacent[from] = new LinkedList<>();
             adjacent[from].add(newEdge);
             numStreets++;
         }
@@ -81,7 +81,7 @@ public class CompetitionDijkstra {
             sourceNodeDijkstra = sourceNode;
 
             // restart the minPQ from scratch, no nodes on it yet.
-            vertexMinDistPQ = new PriorityQueue<Integer>(new VertexComparator());
+            vertexMinDistPQ = new PriorityQueue<>(new VertexComparator());
 
             // initialise all the distances in the distTo[] array as ~infinite,
             // except for distTo[sourceNode], which will be 0
@@ -118,23 +118,17 @@ public class CompetitionDijkstra {
     // Variables that are used by timeRequiredforCompetition()
     int slowestWalkingSpeed;
     double longestDistanceBetweenTwoVertices;
-    boolean invalidMap;
+
+
     /**
       * @param filename: A filename containing the details of the city road network
       * @param sA, sB, sC: speeds for 3 contestants
       */
-
     CompetitionDijkstra (String filename, int sA, int sB, int sC){
         // We need to get the slowest walking speed of the three contestants
         slowestWalkingSpeed = sA;
         if(sB < slowestWalkingSpeed) slowestWalkingSpeed = sB;
         if(sC < slowestWalkingSpeed) slowestWalkingSpeed = sC;
-
-        // If the map we are given contains scenarios where the competition is impossible to
-        // complete, this boolean will be used in timeRequiredforCompetition() to make sure
-        // that we return '-1' to say that it is invalid. Until the Dijkstra shortest paths
-        // are created from the text file, then we'll also return -1.
-        invalidMap = true;
 
         // initialise a city map, based on the contents of the text file
         CityMap ourCityMap = getMapFromFile(filename);
@@ -180,8 +174,8 @@ public class CompetitionDijkstra {
                 for (DirectedEdge e : ourCityMap.adjacent[nextVertexToVisit]) {
                     int w = e.getTo();
 
-                    if (ourCityMap.distTo[w] > ourCityMap.distTo[nextVertexToVisit] + e.weight) {
-                        ourCityMap.distTo[w] = ourCityMap.distTo[nextVertexToVisit] + e.weight;
+                    if (ourCityMap.distTo[w] > ourCityMap.distTo[nextVertexToVisit] + e.getWeight()) {
+                        ourCityMap.distTo[w] = ourCityMap.distTo[nextVertexToVisit] + e.getWeight();
 
                         // As the distance to w has definitely been shortened if we are in this if-statement,
                         // then we can throw the new value for w on the MinPQ (assuming we haven't already
@@ -208,8 +202,11 @@ public class CompetitionDijkstra {
      * @return int: minimum minutes that will pass before the three contestants can meet
      */
     public int timeRequiredforCompetition(){
-        //TODO
-        return -1;
+        if(longestDistanceBetweenTwoVertices == -1)
+            return -1;
+
+        double timeRequired = longestDistanceBetweenTwoVertices / slowestWalkingSpeed;
+        return (int) Math.ceil(timeRequired);
     }
 
     public static CityMap getMapFromFile(String fileName) {
