@@ -173,7 +173,7 @@ public class CompetitionDijkstra {
                     if (ourCityMap.vertexMinDistPQ.isEmpty()) break;
                     nextVertexToVisit = ourCityMap.vertexMinDistPQ.poll();
                 }
-                
+
                 /* if the min-distance vertex on the minPQ is of a distance of Integer.MAX_VALUE,
                  * then this means that there is no route that exists between the source vertex
                  * and this vertex, which means that this is an invalid city map. */
