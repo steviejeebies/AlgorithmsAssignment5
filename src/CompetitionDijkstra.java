@@ -88,7 +88,6 @@ public class CompetitionDijkstra {
             distTo = new double[numIntersections];
             for (int distIter = 0; distIter < numIntersections; distIter++) {
                 distTo[distIter] = (distIter == sourceNodeDijkstra) ? 0 : Integer.MAX_VALUE;
-                vertexMinDistPQ.add(distIter);
             }
 
             // no vertices have been visited yet.
@@ -103,9 +102,9 @@ public class CompetitionDijkstra {
         class VertexComparator implements Comparator<Integer>{
             @Override
             public int compare(Integer v1, Integer v2) {
-                if (distTo[v1] < distTo[v2])
+                if (distTo[v1] > distTo[v2])
                     return 1;
-                else if (distTo[v1] > distTo[v2])
+                else if (distTo[v1] < distTo[v2])
                     return -1;
                 return 0;
             }
@@ -174,6 +173,8 @@ public class CompetitionDijkstra {
                     nextVertexToVisit = ourCityMap.vertexMinDistPQ.poll();
                 }
 
+                if(ourCityMap.visited[nextVertexToVisit]) break;
+
                 /* if the min-distance vertex on the minPQ is of a distance of Integer.MAX_VALUE,
                  * then this means that there is no route that exists between the source vertex
                  * and this vertex, which means that this is an invalid city map. */
@@ -191,9 +192,9 @@ public class CompetitionDijkstra {
                         if (ourCityMap.distTo[w] > ourCityMap.distTo[nextVertexToVisit] + e.getWeight()) {
                             ourCityMap.distTo[w] = ourCityMap.distTo[nextVertexToVisit] + e.getWeight();
 
-                            // As the distance to w has definitely been shortened if we are in this if-statement,
-                            // then we can throw the new value for w on the MinPQ (assuming we haven't already
-                            // visited and relaxed all the vertices of w).
+                            /* As the distance to w has definitely been shortened if we are in this if-statement,
+                             * then we can throw the new value for w on the MinPQ (assuming we haven't already
+                             * visited and relaxed all the vertices of w). */
                             if (!ourCityMap.visited[w]) ourCityMap.vertexMinDistPQ.add(w);
                             //ourCityMap.edgeTo[w] = e;
                         }
@@ -207,6 +208,11 @@ public class CompetitionDijkstra {
             for (int j = 0; j < numIntersections; j++) {
                 if (ourCityMap.distTo[j] > longestDistanceBetweenTwoVertices)
                     longestDistanceBetweenTwoVertices = ourCityMap.distTo[j];
+                if (ourCityMap.distTo[j] == Integer.MAX_VALUE) {
+                    longestDistanceBetweenTwoVertices = -1;
+                    return longestDistanceBetweenTwoVertices;
+                }
+
             }
         }
 
@@ -230,7 +236,7 @@ public class CompetitionDijkstra {
             File file = new File(fileName);    //creates a new file instance
             Scanner scan = new Scanner(file);
             newCityMap = new CityMap(scan.nextInt());
-            int numEdges = scan.nextInt();
+            scan.nextInt();  // discard the num of edges value included in text file, we don't need it
             while ((scan.hasNext())) {
                 DirectedEdge newEdge = new DirectedEdge(
                         scan.nextInt(), // from

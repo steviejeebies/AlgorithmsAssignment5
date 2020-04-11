@@ -22,59 +22,56 @@ import java.util.Scanner;
 public class CompetitionFloydWarshall {
     double distTo[][];
 
+    // Variables that are used by timeRequiredforCompetition()
+    int slowestWalkingSpeed;
+    double longestDistanceBetweenTwoVertices;
+
     /**
      * @param filename: A filename containing the details of the city road network
      * @param sA, sB, sC: speeds for 3 contestants
      */
     CompetitionFloydWarshall (String filename, int sA, int sB, int sC){
-        getMapFromFile(filename);
-        int i, j, k;
-        int V = distTo.length;
-        for (k = 0; k < V; k++)
-        {
-            // Pick all vertices as source one by one
-            for (i = 0; i < V; i++)
-            {
-                // Pick all vertices as destination for the
-                // above picked source
-                for (j = 0; j < V; j++)
-                {
-                    // If vertex k is on the shortest path from
-                    // i to j, then update the value of dist[i][j]
-                    if (distTo[i][k] + distTo[k][j] < distTo[i][j])
-                        distTo[i][j] = distTo[i][k] + distTo[k][j];
+        if(detectWalkingSpeedError(sA, sB, sC))
+            longestDistanceBetweenTwoVertices = -1;
+        else {
+            System.out.println(filename);
+            slowestWalkingSpeed = sA;
+            if (sB < slowestWalkingSpeed) slowestWalkingSpeed = sB;
+            if (sC < slowestWalkingSpeed) slowestWalkingSpeed = sC;
+
+            getMapFromFile(filename);
+            int i, j, k;
+            int V = distTo.length;
+            for (k = 0; k < V; k++) {
+                for (i = 0; i < V; i++) {
+                    for (j = 0; j < V; j++) {
+                        if (distTo[i][k] + distTo[k][j] < distTo[i][j])
+                            distTo[i][j] = distTo[i][k] + distTo[k][j];
+                    }
                 }
             }
-        }
 
-        // Print the shortest distance matrix
-        printSolution(distTo, V);
+            longestDistanceBetweenTwoVertices = getMaxValueOnArray(distTo);
+        }
     }
 
-    void printSolution(double dist[][], int V)
+    public boolean detectWalkingSpeedError(int sA, int sB, int sC)
     {
-        System.out.println("The following matrix shows the shortest "+
-                "distances between every pair of vertices");
-        for (int i=0; i<V; ++i)
-        {
-            for (int j=0; j<V; ++j)
-            {
-                if (dist[i][j]==Integer.MAX_VALUE)
-                    System.out.print("INF ");
-                else
-                    System.out.print(dist[i][j]+"   ");
-            }
-            System.out.println();
-        }
+        if(sA < 50 || sA > 100) return true;
+        if(sB < 50 || sB > 100) return true;
+        if(sC < 50 || sC > 100) return true;
+        return false;
     }
 
     /**
      * @return int: minimum minutes that will pass before the three contestants can meet
      */
     public int timeRequiredforCompetition(){
+        if(longestDistanceBetweenTwoVertices == -1)
+            return -1;
 
-        //TO DO
-        return -1;
+        double timeRequired = (longestDistanceBetweenTwoVertices*1000) / slowestWalkingSpeed;
+        return (int) Math.ceil(timeRequired);
     }
 
     public void getMapFromFile(String fileName) {
@@ -82,6 +79,7 @@ public class CompetitionFloydWarshall {
             File file = new File(fileName);    //creates a new file instance
             Scanner scan = new Scanner(file);
             int numVertices = scan.nextInt();
+            scan.nextInt(); // discard the num of edges value included in text file, we don't need it
             distTo = new double[numVertices][numVertices];
             initialiseArrayInfinite(distTo);
             while ((scan.hasNext())) {
@@ -93,12 +91,31 @@ public class CompetitionFloydWarshall {
     }
 
     void initialiseArrayInfinite(double[][] array) {
-        int i = -1, j = -1;
+        int i = 0, j;
         int length = array.length;
-        while(++i < length) {
-            while (++j < length) {
-                array[i][j] = Integer.MAX_VALUE;
+        while(i < length) {
+            j = 0;
+            while (j < length) {
+                array[i][j++] = Integer.MAX_VALUE;
             }
+            i++;
         }
+    }
+
+    double getMaxValueOnArray(double[][] array) {
+        double returnValue = -1;
+        double value;
+        int i = 0, j;
+        int length = array.length;
+        while(i < length) {
+            j = 0;
+            while (j < length) {
+                value = array[i][j++];
+                if(value == Integer.MAX_VALUE) return -1;
+                if(value > returnValue) returnValue = value;
+            }
+            i++;
+        }
+        return returnValue;
     }
 }
