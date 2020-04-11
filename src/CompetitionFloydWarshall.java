@@ -15,17 +15,58 @@
  * This class implements the competition using Floyd-Warshall algorithm
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Scanner;
+
 public class CompetitionFloydWarshall {
+    double distTo[][];
 
     /**
      * @param filename: A filename containing the details of the city road network
      * @param sA, sB, sC: speeds for 3 contestants
      */
     CompetitionFloydWarshall (String filename, int sA, int sB, int sC){
+        getMapFromFile(filename);
+        int i, j, k;
+        int V = distTo.length;
+        for (k = 0; k < V; k++)
+        {
+            // Pick all vertices as source one by one
+            for (i = 0; i < V; i++)
+            {
+                // Pick all vertices as destination for the
+                // above picked source
+                for (j = 0; j < V; j++)
+                {
+                    // If vertex k is on the shortest path from
+                    // i to j, then update the value of dist[i][j]
+                    if (distTo[i][k] + distTo[k][j] < distTo[i][j])
+                        distTo[i][j] = distTo[i][k] + distTo[k][j];
+                }
+            }
+        }
 
-        //TODO
+        // Print the shortest distance matrix
+        printSolution(distTo, V);
     }
 
+    void printSolution(double dist[][], int V)
+    {
+        System.out.println("The following matrix shows the shortest "+
+                "distances between every pair of vertices");
+        for (int i=0; i<V; ++i)
+        {
+            for (int j=0; j<V; ++j)
+            {
+                if (dist[i][j]==Integer.MAX_VALUE)
+                    System.out.print("INF ");
+                else
+                    System.out.print(dist[i][j]+"   ");
+            }
+            System.out.println();
+        }
+    }
 
     /**
      * @return int: minimum minutes that will pass before the three contestants can meet
@@ -36,4 +77,28 @@ public class CompetitionFloydWarshall {
         return -1;
     }
 
+    public void getMapFromFile(String fileName) {
+        try {
+            File file = new File(fileName);    //creates a new file instance
+            Scanner scan = new Scanner(file);
+            int numVertices = scan.nextInt();
+            distTo = new double[numVertices][numVertices];
+            initialiseArrayInfinite(distTo);
+            while ((scan.hasNext())) {
+                distTo[scan.nextInt()][scan.nextInt()] = scan.nextDouble();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void initialiseArrayInfinite(double[][] array) {
+        int i = -1, j = -1;
+        int length = array.length;
+        while(++i < length) {
+            while (++j < length) {
+                array[i][j] = Integer.MAX_VALUE;
+            }
+        }
+    }
 }

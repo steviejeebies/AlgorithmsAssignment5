@@ -53,7 +53,7 @@ public class CompetitionDijkstra {
         PriorityQueue<Integer> vertexMinDistPQ;
 
         CityMap(int size) {
-            adjacent = (LinkedList<DirectedEdge>[]) new LinkedList[size];
+            adjacent = new LinkedList[size];
             numIntersections = size;
             numStreets = 0;
             numVisited = 0;
@@ -112,7 +112,7 @@ public class CompetitionDijkstra {
         }
 
         public int getNumIntersections() { return numIntersections; }
-        public int getNumStreets() { return numStreets; }
+        // public int getNumStreets() { return numStreets; }
     }
 
     // Variables that are used by timeRequiredforCompetition()
@@ -126,14 +126,27 @@ public class CompetitionDijkstra {
       */
     CompetitionDijkstra (String filename, int sA, int sB, int sC){
         // We need to get the slowest walking speed of the three contestants
-        slowestWalkingSpeed = sA;
-        if(sB < slowestWalkingSpeed) slowestWalkingSpeed = sB;
-        if(sC < slowestWalkingSpeed) slowestWalkingSpeed = sC;
+        System.out.println(filename);
+        if(detectWalkingSpeedError(sA, sB, sC))
+            longestDistanceBetweenTwoVertices = -1;
+        else {
+            slowestWalkingSpeed = sA;
+            if (sB < slowestWalkingSpeed) slowestWalkingSpeed = sB;
+            if (sC < slowestWalkingSpeed) slowestWalkingSpeed = sC;
 
-        // initialise a city map, based on the contents of the text file
-        CityMap ourCityMap = getMapFromFile(filename);
+            // initialise a city map, based on the contents of the text file
+            CityMap ourCityMap = getMapFromFile(filename);
 
-        longestDistanceBetweenTwoVertices = dijkstraLongestDistance(ourCityMap);
+            longestDistanceBetweenTwoVertices = dijkstraLongestDistance(ourCityMap);
+        }
+    }
+
+    public boolean detectWalkingSpeedError(int sA, int sB, int sC)
+    {
+        if(sA < 50 || sA > 100) return true;
+        if(sB < 50 || sB > 100) return true;
+        if(sC < 50 || sC > 100) return true;
+        return false;
     }
 
     public double dijkstraLongestDistance(CityMap ourCityMap) {
@@ -157,10 +170,10 @@ public class CompetitionDijkstra {
                 // if we have already visited this vertex, then we need to get the
                 // next min-distance vertex on the PQ.
                 while (ourCityMap.visited[nextVertexToVisit]) {
-                    if (ourCityMap.vertexMinDistPQ.isEmpty()) return -1;
+                    if (ourCityMap.vertexMinDistPQ.isEmpty()) break;
                     nextVertexToVisit = ourCityMap.vertexMinDistPQ.poll();
                 }
-
+                
                 /* if the min-distance vertex on the minPQ is of a distance of Integer.MAX_VALUE,
                  * then this means that there is no route that exists between the source vertex
                  * and this vertex, which means that this is an invalid city map. */
@@ -171,17 +184,19 @@ public class CompetitionDijkstra {
                 ourCityMap.visitVertex(nextVertexToVisit);
 
                 // Relaxing all edges starting from the 'nextVertexToVisit' vertex
-                for (DirectedEdge e : ourCityMap.adjacent[nextVertexToVisit]) {
-                    int w = e.getTo();
+                if(ourCityMap.adjacent[nextVertexToVisit] != null) {
+                    for (DirectedEdge e : ourCityMap.adjacent[nextVertexToVisit]) {
+                        int w = e.getTo();
 
-                    if (ourCityMap.distTo[w] > ourCityMap.distTo[nextVertexToVisit] + e.getWeight()) {
-                        ourCityMap.distTo[w] = ourCityMap.distTo[nextVertexToVisit] + e.getWeight();
+                        if (ourCityMap.distTo[w] > ourCityMap.distTo[nextVertexToVisit] + e.getWeight()) {
+                            ourCityMap.distTo[w] = ourCityMap.distTo[nextVertexToVisit] + e.getWeight();
 
-                        // As the distance to w has definitely been shortened if we are in this if-statement,
-                        // then we can throw the new value for w on the MinPQ (assuming we haven't already
-                        // visited and relaxed all the vertices of w).
-                        if (!ourCityMap.visited[w]) ourCityMap.vertexMinDistPQ.add(w);
-                        //ourCityMap.edgeTo[w] = e;
+                            // As the distance to w has definitely been shortened if we are in this if-statement,
+                            // then we can throw the new value for w on the MinPQ (assuming we haven't already
+                            // visited and relaxed all the vertices of w).
+                            if (!ourCityMap.visited[w]) ourCityMap.vertexMinDistPQ.add(w);
+                            //ourCityMap.edgeTo[w] = e;
+                        }
                     }
                 }
             }
@@ -205,7 +220,7 @@ public class CompetitionDijkstra {
         if(longestDistanceBetweenTwoVertices == -1)
             return -1;
 
-        double timeRequired = longestDistanceBetweenTwoVertices / slowestWalkingSpeed;
+        double timeRequired = (longestDistanceBetweenTwoVertices*1000) / slowestWalkingSpeed;
         return (int) Math.ceil(timeRequired);
     }
 
@@ -213,33 +228,20 @@ public class CompetitionDijkstra {
         CityMap newCityMap;
         try {
             File file = new File(fileName);    //creates a new file instance
-            FileReader ourFileReader = new FileReader(file);   //reads the file
-            BufferedReader ourBufferedReader = new BufferedReader(ourFileReader);
-
-            // get number of vertices, and create a new CityMap object
-            newCityMap = new CityMap(Integer.parseInt(ourBufferedReader.readLine()));
-            int numEdges = Integer.parseInt(ourBufferedReader.readLine());
-            int i = 0;
-            String str;
-            while ((str = ourBufferedReader.readLine()) != null) {
-                String[] arrOfStr = str.split(" "); // split line into three (string) numbers
-                // parse as ints and pass as parameters to create new edges on our city map
+            Scanner scan = new Scanner(file);
+            newCityMap = new CityMap(scan.nextInt());
+            int numEdges = scan.nextInt();
+            while ((scan.hasNext())) {
                 DirectedEdge newEdge = new DirectedEdge(
-                        Integer.parseInt(arrOfStr[0]),
-                        Integer.parseInt(arrOfStr[1]),
-                        Double.parseDouble(arrOfStr[2]));
+                        scan.nextInt(), // from
+                        scan.nextInt(), // to
+                        scan.nextDouble()); // weight
                 newCityMap.addEdge(newEdge);
             }
-            ourFileReader.close();    //closes the stream and release the resources
             return newCityMap;
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
-
-    public static void main(String [] args) {
-        CityMap ourCityMap = getMapFromFile("input-B.txt");
-    }
-
 }
