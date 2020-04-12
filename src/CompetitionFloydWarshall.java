@@ -31,40 +31,27 @@ public class CompetitionFloydWarshall {
      * @param sA, sB, sC: speeds for 3 contestants
      */
     CompetitionFloydWarshall (String filename, int sA, int sB, int sC){
-        if(detectWalkingSpeedError(sA, sB, sC))
-            longestDistanceBetweenTwoVertices = -1;
-        else {
-            slowestWalkingSpeed = sA;
-            if (sB < slowestWalkingSpeed) slowestWalkingSpeed = sB;
-            if (sC < slowestWalkingSpeed) slowestWalkingSpeed = sC;
+        longestDistanceBetweenTwoVertices = -1;
 
+        if(validWalkingSpeed(sA, sB, sC))
+        {
             getMapFromFile(filename);
+
             int i, j, k;
             int V = distTo.length;
             for (k = 0; k < V; k++) {
                 for (i = 0; i < V; i++) {
                     for (j = 0; j < V; j++) {
-                        if (distTo[i][k] + distTo[k][j] < distTo[i][j])
+                        if (distTo[i][j] > distTo[i][k] + distTo[k][j])
                             distTo[i][j] = distTo[i][k] + distTo[k][j];
                     }
                 }
             }
 
-            longestDistanceBetweenTwoVertices = getMaxValueOnArray(distTo);
+            longestDistanceBetweenTwoVertices = getMaxDistanceOnArray();
         }
     }
 
-    public boolean detectWalkingSpeedError(int sA, int sB, int sC)
-    {
-        if(sA < 50 || sA > 100) return true;
-        if(sB < 50 || sB > 100) return true;
-        if(sC < 50 || sC > 100) return true;
-        return false;
-    }
-
-    /**
-     * @return int: minimum minutes that will pass before the three contestants can meet
-     */
     public int timeRequiredforCompetition(){
         if(longestDistanceBetweenTwoVertices == -1)
             return -1;
@@ -73,7 +60,23 @@ public class CompetitionFloydWarshall {
         return (int) Math.ceil(timeRequired);
     }
 
-    public void getMapFromFile(String fileName) {
+    private boolean validWalkingSpeed(int sA, int sB, int sC)
+    {
+        if((sA >= 50 && sA <= 100) && (sB >= 50 && sB <= 100) && (sC >= 50 && sC <= 100))
+        {
+            slowestWalkingSpeed = sA;
+            if (sB < slowestWalkingSpeed) slowestWalkingSpeed = sB;
+            if (sC < slowestWalkingSpeed) slowestWalkingSpeed = sC;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @return int: minimum minutes that will pass before the three contestants can meet
+     */
+
+    private void getMapFromFile(String fileName) {
         try {
             File file = new File(fileName);    //creates a new file instance
             Scanner scan = new Scanner(file);
@@ -84,33 +87,30 @@ public class CompetitionFloydWarshall {
             while ((scan.hasNext())) {
                 distTo[scan.nextInt()][scan.nextInt()] = scan.nextDouble();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
-    void initialiseArrayInfinite(double[][] array) {
-        int i = 0, j;
+    private void initialiseArrayInfinite(double[][] array) {
         int length = array.length;
-        while(i < length) {
-            j = 0;
-            while (j < length) {
-                array[i][j++] = Integer.MAX_VALUE;
+        for(int i = 0; i < length; i++) {
+            for(int j = 0; j < length; j++){
+                array[i][j] = (i == j) ? 0 : Double.POSITIVE_INFINITY;
             }
-            i++;
         }
     }
 
-    double getMaxValueOnArray(double[][] array) {
+    private double getMaxDistanceOnArray() {
         double returnValue = -1;
         double value;
-        int i = 0, j;
-        int length = array.length;
+        int i = 0;
+        int j;
+        int length = distTo.length;
+
         while(i < length) {
             j = 0;
             while (j < length) {
-                value = array[i][j++];
-                if(value == Integer.MAX_VALUE) return -1;
+                value = distTo[i][j++];
+                if(value == Double.POSITIVE_INFINITY) return -1;
                 if(value > returnValue) returnValue = value;
             }
             i++;

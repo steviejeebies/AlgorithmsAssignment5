@@ -84,7 +84,7 @@ public class CityMap {
     public void addToPQ(int value){
         if(vertexMinDistPQ != null) vertexMinDistPQ.add(value);
     }
-    
+
     public double updateLongestDistanceBetweenTwoVertices(double currentLongestDistance) {
         if(distTo == null) return -1;
         for (int j = 0; j < numIntersections; j++) {
@@ -124,8 +124,6 @@ public class CityMap {
                         scan.nextDouble()); // weight
                 addEdge(newEdge);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
     }
 }
