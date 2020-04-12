@@ -53,11 +53,10 @@ public class CompetitionFloydWarshall {
     }
 
     public int timeRequiredforCompetition(){
-        if(longestDistanceBetweenTwoVertices == -1)
-            return -1;
+        if(longestDistanceBetweenTwoVertices == -1) return -1;
 
-        double timeRequired = (longestDistanceBetweenTwoVertices*1000) / slowestWalkingSpeed;
-        return (int) Math.ceil(timeRequired);
+        double timeRequired = Math.ceil(((longestDistanceBetweenTwoVertices*1000) / slowestWalkingSpeed));
+        return (int) timeRequired;
     }
 
     private boolean validWalkingSpeed(int sA, int sB, int sC)
@@ -102,18 +101,14 @@ public class CompetitionFloydWarshall {
     private double getMaxDistanceOnArray() {
         double returnValue = -1;
         double value;
-        int i = 0;
-        int j;
         int length = distTo.length;
 
-        while(i < length) {
-            j = 0;
-            while (j < length) {
-                value = distTo[i][j++];
+        for(int i = 0; i < length; i++) {
+            for(int j = 0; j < length; j++) {
+                value = distTo[i][j];
                 if(value == Double.POSITIVE_INFINITY) return -1;
                 if(value > returnValue) returnValue = value;
             }
-            i++;
         }
         return returnValue;
     }
