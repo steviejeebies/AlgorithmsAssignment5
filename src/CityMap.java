@@ -9,7 +9,6 @@ public class CityMap {
     // City map related variables/arrays
     LinkedList<DirectedEdge>[] adjacentEdges;
     int numIntersections;
-    int numStreets;
 
     // Dijkstra related variables/arrays
     int sourceVertexDijkstra;
@@ -17,7 +16,6 @@ public class CityMap {
     boolean[] visited;
     int numVisited;
     PriorityQueue<Integer> vertexMinDistPQ;
-    // DirectedEdge edgeTo[];       // we don't need to retain this list of edges for this program
 
     CityMap(String filename) {
         getMapFromFile(filename);
@@ -28,11 +26,17 @@ public class CityMap {
         int from = newEdge.getFrom();
         if (adjacentEdges[from] == null) adjacentEdges[from] = new LinkedList<DirectedEdge>();
         adjacentEdges[from].add(newEdge);
-        numStreets++;
     }
 
-    // This method will be called every time a new *source* vertex/intersection
-    // is used for Dijkstra's algorithms.
+    /**
+     * In the many-to-many implementation of Dijkstra's algorithm, this method resets
+     * all of the Dijkstra-related variables/arrays in the CityMap instance so that
+     * a new source-vertex can be used as the basis of this iteration of Dijkstra's
+     * algorithm. It also adds this source vertex to the PQ, as its only element to
+     * start off.
+     *
+     * @param sourceVertex: a new source-vertex that is the basis of this iteration of Dijkstra's algorithm.
+     */
     public void restartDijkstra(int sourceVertex) {
         sourceVertexDijkstra = sourceVertex;
 
@@ -42,8 +46,8 @@ public class CityMap {
         // initialise all the distances in the distTo[] array as ~infinite,
         // except for distTo[sourceNode], which will be 0
         distTo = new double[numIntersections];
-        for (int distIter = 0; distIter < numIntersections; distIter++)
-            distTo[distIter] = Double.POSITIVE_INFINITY;
+        for (int i = 0; i < numIntersections; i++)
+            distTo[i] = Double.POSITIVE_INFINITY;
         distTo[sourceVertexDijkstra] = 0;
 
         // no vertices have been visited yet.
@@ -52,6 +56,13 @@ public class CityMap {
         addToPQ(sourceVertex);
     }
 
+    /**
+     * This method essentially acts as the removeMin() method for our directed-edge priority queue. It also
+     * detects when a graph is invalid.
+     *
+     * @return A linked-list of all the edges originating from the next vertex that we are examining in Dijkstra's
+     *         algoritm.
+     */
     public LinkedList<DirectedEdge> getClosestVertex(){
         while(true) {
             Integer minDistanceVertex = vertexMinDistPQ.poll();
@@ -73,7 +84,7 @@ public class CityMap {
     public void addToPQ(int value){
         if(vertexMinDistPQ != null) vertexMinDistPQ.add(value);
     }
-
+    
     public double updateLongestDistanceBetweenTwoVertices(double currentLongestDistance) {
         if(distTo == null) return -1;
         for (int j = 0; j < numIntersections; j++) {
@@ -98,7 +109,6 @@ public class CityMap {
     }
 
     public int getNumIntersections() { return numIntersections; }
-    // public int getNumStreets() { return numStreets; }        // unused method
 
     public void getMapFromFile(String fileName) {
         try {

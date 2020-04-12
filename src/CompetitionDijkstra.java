@@ -15,10 +15,6 @@
  * This class implements the competition using Dijkstra's algorithm
  */
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.*;
 
 public class CompetitionDijkstra {
@@ -31,9 +27,8 @@ public class CompetitionDijkstra {
       * @param sA, sB, sC: speeds for 3 contestants
       */
     CompetitionDijkstra (String filename, int sA, int sB, int sC){
-        System.out.println(filename);
         longestDistanceBetweenTwoVertices = -1;
-        if(checkWalkingSpeedValid(sA, sB, sC)) {
+        if(validWalkingSpeed(sA, sB, sC)) {
             // initialise a city map, based on the contents of the text file
             CityMap ourCityMap = new CityMap(filename);
             // start Dijkstra algorithm
@@ -41,7 +36,13 @@ public class CompetitionDijkstra {
         }
     }
 
-    public boolean checkWalkingSpeedValid(int sA, int sB, int sC)
+    /**
+     * Checks that the average walking speeds inputted are valid based on the Assignment instructions,
+     * and finds the slowest walking contestant of the three.
+     * @param sA, sB, sC: speeds for 3 contestants
+     * @return true if, for any walking speed s, 50 <= s <= 100
+     */
+    public boolean validWalkingSpeed(int sA, int sB, int sC)
     {
         if((sA >= 50 && sA <= 100) && (sB >= 50 && sB <= 100) && (sC >= 50 && sC <= 100))
         {
@@ -53,11 +54,19 @@ public class CompetitionDijkstra {
         return false;
     }
 
+    /**
+     * Many-to-many implementation of Dijkstra's algorithm. Out of all the shortest
+     * paths, this method returns the *longest* shortest-path from any node to any
+     * other node on the city map.
+     *
+     * @param ourCityMap: A city map that has already been constructed from a text file
+     * @return length of the longest shortest-path from any node to any other node
+     */
     public double dijkstraLongestDistance(CityMap ourCityMap) {
         int numIntersections = ourCityMap.getNumIntersections();
         int nextVertexToVisit;
         LinkedList<DirectedEdge> vertexWithEdges;
-        double tempLongestDistance = -1;
+        double currentLongestDistance = -1;
 
         /* For every intersections in the map, we need to find the shortest distance
          * from that intersection to every other intersection. In other words, many-to-many
@@ -104,10 +113,10 @@ public class CompetitionDijkstra {
                     }
                 }
             }
-            tempLongestDistance = ourCityMap.updateLongestDistanceBetweenTwoVertices(tempLongestDistance);
-            if(tempLongestDistance == -1) return -1;
+            currentLongestDistance = ourCityMap.updateLongestDistanceBetweenTwoVertices(currentLongestDistance);
+            if(currentLongestDistance == -1) return -1;
         }
-        return tempLongestDistance;
+        return currentLongestDistance;
     }
 
     /**
