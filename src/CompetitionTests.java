@@ -11,7 +11,7 @@ public class CompetitionTests {
         System.out.println(ourDijkstraVersion.timeRequiredforCompetition());
         ourDijkstraVersion = new CompetitionDijkstra("input-C.txt", 60, 70, 70);
         System.out.println(ourDijkstraVersion.timeRequiredforCompetition());
-        ourDijkstraVersion = new CompetitionDijkstra("input-D.txt", 70, 70, 70);
+        ourDijkstraVersion = new CompetitionDijkstra("input-D.txt", 50,80,60);
         System.out.println(ourDijkstraVersion.timeRequiredforCompetition());
         ourDijkstraVersion = new CompetitionDijkstra("input-E.txt", 70, 70, 70);
         System.out.println(ourDijkstraVersion.timeRequiredforCompetition());
@@ -27,7 +27,7 @@ public class CompetitionTests {
         System.out.println(ourDijkstraVersion.timeRequiredforCompetition());
         ourDijkstraVersion = new CompetitionDijkstra("input-K.txt", 70, 70, 70);
         System.out.println(ourDijkstraVersion.timeRequiredforCompetition());
-        ourDijkstraVersion = new CompetitionDijkstra("input-L.txt", 70, 70, 70);
+        ourDijkstraVersion = new CompetitionDijkstra("input-L.txt", 63, 77, 95);
         System.out.println(ourDijkstraVersion.timeRequiredforCompetition());
         ourDijkstraVersion = new CompetitionDijkstra("input-M.txt", 70, 70, 70);
         System.out.println(ourDijkstraVersion.timeRequiredforCompetition());
@@ -39,42 +39,43 @@ public class CompetitionTests {
         System.out.println(ourDijkstraVersion.timeRequiredforCompetition());
     }
 
-    @Test
-    public void testFWConstructor() {
-        CompetitionFloydWarshall ourFloydWarshallVersion;
-        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-A.txt", 70, 70, 70);
-        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
-        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-B.txt", 70, 70, 70);
-        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
-        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-C.txt", 70, 70, 70);
-        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
-        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-D.txt", 70, 70, 70);
-        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
-        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-E.txt", 70, 70, 70);
-        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
-        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-F.txt", 70, 70, 70);
-        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
-        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-G.txt", 70, 70, 70);
-        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
-        //ourFloydWarshallVersion = new CompetitionFloydWarshall("input-H.txt", 70, 70, 70);
-        //System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
-        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-I.txt", 70, 70, 70);
-        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
-        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-J.txt", 70, 70, 70);
-        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
-        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-K.txt", 70, 70, 70);
-        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
-        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-L.txt", 70, 70, 70);
-        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
-        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-M.txt", 70, 70, 70);
-        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
-        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-N.txt", 70, 70, 70);
-        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
-        ourFloydWarshallVersion = new CompetitionFloydWarshall("tinyEWD.txt", 70, 70, 70);
-        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
-        ourFloydWarshallVersion = new CompetitionFloydWarshall("1000EWD.txt", 70, 70, 70);
-        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
-    }
+//    @Test
+//    public void testFWConstructor() {
+//        CompetitionFloydWarshall ourFloydWarshallVersion;
+//        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-A.txt", 70, 70, 70);
+//        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
+//        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-B.txt", 70, 70, 70);
+//        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
+//        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-C.txt", 70, 70, 70);
+//        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
+//        System.out.println("input-D");
+//        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-D.txt", 50, 80, 60);
+//        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
+//        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-E.txt", 70, 70, 70);
+//        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
+//        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-F.txt", 70, 70, 70);
+//        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
+//        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-G.txt", 70, 70, 70);
+//        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
+//        //ourFloydWarshallVersion = new CompetitionFloydWarshall("input-H.txt", 70, 70, 70);
+//        //System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
+//        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-I.txt", 70, 70, 70);
+//        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
+//        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-J.txt", 70, 70, 70);
+//        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
+//        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-K.txt", 70, 70, 70);
+//        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
+//        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-L.txt", 63, 77, 95);
+//        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
+//        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-M.txt", 70, 70, 70);
+//        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
+//        ourFloydWarshallVersion = new CompetitionFloydWarshall("input-N.txt", 70, 70, 70);
+//        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
+//        ourFloydWarshallVersion = new CompetitionFloydWarshall("tinyEWD.txt", 70, 70, 70);
+//        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
+//        ourFloydWarshallVersion = new CompetitionFloydWarshall("1000EWD.txt", 70, 70, 70);
+//        System.out.println(ourFloydWarshallVersion.timeRequiredforCompetition());
+//    }
 
     //TODO - more tests
 

@@ -34,7 +34,6 @@ public class CompetitionFloydWarshall {
         if(detectWalkingSpeedError(sA, sB, sC))
             longestDistanceBetweenTwoVertices = -1;
         else {
-            System.out.println(filename);
             slowestWalkingSpeed = sA;
             if (sB < slowestWalkingSpeed) slowestWalkingSpeed = sB;
             if (sC < slowestWalkingSpeed) slowestWalkingSpeed = sC;
