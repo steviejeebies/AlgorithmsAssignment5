@@ -1,3 +1,7 @@
+/**
+ * @author: Stephen Rowe (rowes@tcd.ie, ID: 14319662)
+ */
+
 /*
  * A Contest to Meet (ACM) is a reality TV contest that sets three contestants at three random
  * city intersections. In order to win, the three contestants need all to meet at any intersection
@@ -122,7 +126,7 @@ public class CompetitionDijkstra {
     /**
      * @return int: minimum minutes that will pass before the three contestants can meet
      */
-    public int timeRequiredforCompetition(){
+    public int timeRequiredForCompetition() {
         if(longestDistanceBetweenTwoVertices == -1) return -1;
 
         double timeRequired = Math.ceil(((longestDistanceBetweenTwoVertices*1000) / slowestWalkingSpeed));

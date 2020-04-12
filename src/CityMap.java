@@ -1,3 +1,7 @@
+/**
+ * @author: Stephen Rowe (rowes@tcd.ie, ID: 14319662)
+ */
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;

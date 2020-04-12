@@ -1,3 +1,7 @@
+/**
+ * @author: Stephen Rowe (rowes@tcd.ie, ID: 14319662)
+ */
+
 public class DirectedEdge {
         private int from;
         private int to;

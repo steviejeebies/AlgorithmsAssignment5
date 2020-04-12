@@ -1,5 +1,8 @@
-/*
- * A Contest to Meet (ACM) is a reality TV contest that sets three contestants at three random
+/**
+ * @author: Stephen Rowe (rowes@tcd.ie, ID: 14319662)
+ */
+
+/* A Contest to Meet (ACM) is a reality TV contest that sets three contestants at three random
  * city intersections. In order to win, the three contestants need all to meet at any intersection
  * of the city as fast as possible.
  * It should be clear that the contestants may arrive at the intersections at different times, in
@@ -13,6 +16,23 @@
  * streets that the contestants can use to traverse the city.
  *
  * This class implements the competition using Floyd-Warshall algorithm
+ */
+
+
+/*
+    DISCUSSION OF FLOYD WARSHALL ALGORITHM:
+        The Floyd Warshall many-to-many shortest path algorithm does not require the data structures
+        (i.e. CityMap and DirectedEdge) that the Dijkstra's implementation requires. The most significant
+        space required is a 2D array that (when the algorithm is completed) lists the distance of any given
+        vertex (x-axis) to any other vertex (y-axis). As a result, the space complexity Floyd-Warshall is
+        Theta(V^2).
+
+        The time complexities of operations, in order they are carried out:
+            - validWalkingSpeed() - O(1), this is a series of constant comparisons and assignments, no loops
+            - getMapFromFile() - O(E), this reads each edge from the text file and assigns the relevant element
+                                 of the 2D array the weight value.
+            - Floyd Algorithm - O(V^3), as the algorithm consists of three nested for-loops
+            
  */
 
 import java.io.File;
