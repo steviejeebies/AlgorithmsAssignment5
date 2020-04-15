@@ -88,6 +88,16 @@ public class CompetitionDijkstra {
     }
 
     /**
+     * @return int: minimum minutes that will pass before the three contestants can meet
+     */
+    public int timeRequiredforCompetition() {
+        if(longestDistanceBetweenTwoVertices == -1) return -1;
+
+        double timeRequired = Math.ceil(((longestDistanceBetweenTwoVertices*1000) / slowestWalkingSpeed));
+        return (int) timeRequired;
+    }
+
+    /**
      * Checks that the average walking speeds inputted are valid based on the Assignment instructions,
      * and finds the slowest walking contestant of the three.
      * @param sA, sB, sC: speeds for 3 contestants
@@ -168,15 +178,5 @@ public class CompetitionDijkstra {
             if(currentLongestDistance == -1) return -1;
         }
         return currentLongestDistance;
-    }
-
-    /**
-     * @return int: minimum minutes that will pass before the three contestants can meet
-     */
-    public int timeRequiredForCompetition() {
-        if(longestDistanceBetweenTwoVertices == -1) return -1;
-
-        double timeRequired = Math.ceil(((longestDistanceBetweenTwoVertices*1000) / slowestWalkingSpeed));
-        return (int) timeRequired;
     }
 }
