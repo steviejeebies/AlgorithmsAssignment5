@@ -19,6 +19,53 @@
  * This class implements the competition using Dijkstra's algorithm
  */
 
+/*
+    DISCUSSION OF DIJKSTRA'S ALGORITHM:
+
+    Dijkstra's algorithm is a one-to-many shortest path algorithm, and as a result, I had to implement the program
+    so that it carried out the algorithm on a given source node, find the distance between this source node and every
+    other node, then move on to the next source node (until we have gone through them all).
+
+    The time complexity of a many-to-many implementation of Dijkstra's algorithm is O(V^3logV). The implementation
+    is shared between this class and the CityMap class.
+
+    We have vertices, which we can just treat as indexes (since they are just numbers), and we have all of the edges,
+    for each of which we create an instance of DirectedEdge and add it to our CityMap class. A small variation I made
+    in this program is that the priority queue for vertices does not implement decreaseKey() when when we have shortened
+    the distance to an edge that is already on the queue. Instead, if a vertex is already on the queue, I leave it there,
+    and also add the vertex to the queue again with respect to the lower distance (unless the vertex that would be added
+    to the PQ is one that we have already visited and processed). This way, I can filter out values popped from the
+    priority queue if we have already visited this node with an if-statement, resulting in little or no detriment to
+    the time-complexity to the algorithm. Adding to the priotity queue is where the 'logV' comes in with respect to the
+    time-complexity, as every vertex will be added to the priority queue.
+
+    Method time-complexity (some of these methods are in CityMap.java)
+    - validWalkingSpeed() - O(1), same as FW
+    - addEdge() - O(1) - add an edge read from the text file to city map
+    - restartDijkstra() - O(V) - have to reset the Dijkstra related arrays entirely for each vertex that we are using
+    as source node.
+    - getClosestVertex() - O(logV) removes the min value from the PQ, and marks it as visited on visited[].
+    - dijkstraLongestDistance - O(V^3(logV)) - this has the structure of Dijkstra's algorithms, calling the relevant
+    methods from City Map in order to either add or remove a vertex from the priority queue, while also iterating
+    through all of the adjacent edges to a vertex to see if they provide a shorter path.
+    - findCurrentLongestDistanceBetweenTwoVertices() - O(V), this iterates through distTo[] and finds the longest
+    shortest path.
+    - timeRequiredForCompetition() - O(N), same as FW implementation
+
+    The improvements that I made to this algorithm is that the algorithm is able to detect very quickly if the map is
+    invalid, meaning that there is no wasted time spent on a map that cannot be used on A Contest To Meet. For example,
+    the method getClosestVertex() checks for all scenarios that a vertex would be invalid (e.g. infinite distance to the
+    vertex that was popped, therefore there is no possible route between this vertex and the source vertex). It will
+    usually be able to detect these issues for the vast majority of cases within the first iteration of Dijkstra (i.e.
+    with the first source vertex), but there are exceptions (such as, if there is a route from 'a' to 'z', but no route
+    from 'z' to 'a', as the edges are directed).
+
+
+
+
+    
+ */
+
 import java.util.*;
 
 public class CompetitionDijkstra {
@@ -69,7 +116,7 @@ public class CompetitionDijkstra {
     public double dijkstraLongestDistance(CityMap ourCityMap) {
         int numIntersections = ourCityMap.getNumIntersections();
         int nextVertexToVisit;
-        LinkedList<DirectedEdge> vertexWithEdges;
+        LinkedList<DirectedEdge> edgesStartingFromThisVertex;
         double currentLongestDistance = -1;
 
         /* For every intersections in the map, we need to find the shortest distance
@@ -85,7 +132,7 @@ public class CompetitionDijkstra {
             ourCityMap.restartDijkstra(vertexSource);
 
             while(ourCityMap.stillHasVertexesToVisit()) {
-                vertexWithEdges = ourCityMap.getClosestVertex();
+                edgesStartingFromThisVertex = ourCityMap.getClosestVertex();
                 /* if vertexesWithEdges is null here, then one of the following three scenarios have happened:
                  * (1) The vertex that was taken from the PQ has a distance of infinity from the source node, meaning
                  *     that there is no possible path from source to this node.
@@ -95,16 +142,16 @@ public class CompetitionDijkstra {
                  * In all three cases, if this scenario happens while calculating the Dijkstra shortest path, then
                  * this map is invalid for A Content to Meet, and we can end the program early. */
 
-                if(vertexWithEdges == null) return -1;
+                if(edgesStartingFromThisVertex == null) return -1;
 
-                nextVertexToVisit = vertexWithEdges.get(0).getFrom();   /* this is just a quick way of getting the
+                nextVertexToVisit = edgesStartingFromThisVertex.get(0).getFrom();   /* this is just a quick way of getting the
                                                                          * number of the vertex that we just took off
                                                                          * the PQ. I did it this way because
                                                                          * getClosestVertex() returns a linked list,
                                                                          * not an Int */
 
                 // Relaxing all edges starting from the 'nextVertexToVisit' vertex
-                for (DirectedEdge e : vertexWithEdges) {
+                for (DirectedEdge e : edgesStartingFromThisVertex) {
                     int w = e.getTo();
 
                     if (ourCityMap.distTo[w] > ourCityMap.distTo[nextVertexToVisit] + e.getWeight()) {
@@ -117,7 +164,7 @@ public class CompetitionDijkstra {
                     }
                 }
             }
-            currentLongestDistance = ourCityMap.updateLongestDistanceBetweenTwoVertices(currentLongestDistance);
+            currentLongestDistance = ourCityMap.findCurrentLongestDistanceBetweenTwoVertices(currentLongestDistance);
             if(currentLongestDistance == -1) return -1;
         }
         return currentLongestDistance;

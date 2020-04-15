@@ -25,14 +25,41 @@
         (i.e. CityMap and DirectedEdge) that the Dijkstra's implementation requires. The most significant
         space required is a 2D array that (when the algorithm is completed) lists the distance of any given
         vertex (x-axis) to any other vertex (y-axis). As a result, the space complexity Floyd-Warshall is
-        Theta(V^2).
+        O(V^2).
 
         The time complexities of operations, in order they are carried out:
             - validWalkingSpeed() - O(1), this is a series of constant comparisons and assignments, no loops
-            - getMapFromFile() - O(E), this reads each edge from the text file and assigns the relevant element
+            - getMapFromFile() - O(E)* this reads each edge from the text file and assigns the relevant element
                                  of the 2D array the weight value.
+            - initialiseArrayInfinite() - O(V^2), this method simply fills every element of the distTo[][] array with
+                                the value of Infinity, with the exception of value on the diagonal of the matrix, which
+                                are of value 0, since each vertex is a distance of 0 from itself.
             - Floyd Algorithm - O(V^3), as the algorithm consists of three nested for-loops
-            
+            - getMaxDistanceOnArray() - O(V^2), goes through the entire array and finds the highest value of the array
+                                after all shortest paths have been calculated
+            - timeRequiredforCompetition() - O(1), all operations in this method are constant
+
+            * the actual time-complexity of getMapFromFile() is O(V^2 + E), because it calls initialiseArrayInfinite, but
+              I split them up for explanation.
+
+            The time complexity of the algorithm is O(V^3)
+
+            One possible improvement to this algorithm that I didn't end up implementing is in the method
+            initialiseArrayInfinite(). It may be possible to replace infinite with '0' on the array, and replace '0' on
+            the array (for the distance between a node and itself) with some other value, maybe -infinite. What this means
+            is that instead of initialiseArrayInfinite() being O(V^2), it could be O(V), as we do not need every value on
+            the array, only the diagonal values. However, I figured that the time it would take to implement this, and
+            modify all the comparisons in the program in order to allow for this while also producing the correct result,
+            out-weighted the benefit of it, as the time complexity of the whole algorithm is O(V^3), and reducing this
+            method only from O(V^2) to O(V) has very little impact. In terms of space-complexity, FW uses O(V^2) space,
+            which cannot be improve.
+
+            Within IntelliJ IDE, the time taken by FW to carry out all the tests was 4.7s, which was much higher than
+            my implementation of Dijkstra (2.05s). The reasons for this is that I made some improvements to Dijkstra
+            which helped the running time, in particular with respect to the fact that my Dijkstra algorithm can detect
+            invalid city-maps very quickly (unlike FW, which runs through the entire process and is only able to detect
+            errors at the end). I was not able to implement many improvements to FW as it is such a simple,
+            straight-forward algorithm.
  */
 
 import java.io.File;

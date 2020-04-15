@@ -4,10 +4,7 @@
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.PriorityQueue;
-import java.util.Scanner;
+import java.util.*;
 
 public class CityMap {
     // City map related variables/arrays
@@ -28,7 +25,7 @@ public class CityMap {
 
     public void addEdge(DirectedEdge newEdge) {
         int from = newEdge.getFrom();
-        if (adjacentEdges[from] == null) adjacentEdges[from] = new LinkedList<DirectedEdge>();
+        if (adjacentEdges[from] == null) adjacentEdges[from] = new LinkedList<>();
         adjacentEdges[from].add(newEdge);
     }
 
@@ -89,7 +86,7 @@ public class CityMap {
         if(vertexMinDistPQ != null) vertexMinDistPQ.add(value);
     }
 
-    public double updateLongestDistanceBetweenTwoVertices(double currentLongestDistance) {
+    public double findCurrentLongestDistanceBetweenTwoVertices(double currentLongestDistance) {
         if(distTo == null) return -1;
         for (int j = 0; j < numIntersections; j++) {
             if (distTo[j] > currentLongestDistance)
@@ -114,6 +111,7 @@ public class CityMap {
 
     public int getNumIntersections() { return numIntersections; }
 
+    @SuppressWarnings("unchecked")
     public void getMapFromFile(String fileName) {
         try {
             File file = new File(fileName);    //creates a new file instance
